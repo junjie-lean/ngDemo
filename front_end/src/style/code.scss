@@ -1,0 +1,14 @@
+.lean-demo1-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-direction: row;
+  align-content: center;
+  flex-wrap: nowrap;
+  > div {
+    margin-right: 20px;
+  }
+  .demo1Img {
+    width: 650px;
+  }
+}

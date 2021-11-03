@@ -22,7 +22,7 @@
   },
 
   "awesomeTypescriptLoaderOptions": {
-    "ignoreDiagnostics": [1192, 2691, 2339, 2365, 2322, 2779]
+    "ignoreDiagnostics": [1192, 2691, 2339, 2365, 2322, 2779,2307]
   },
   "include": ["./src/**/*"],
   "exclude": ["node_modules"]
