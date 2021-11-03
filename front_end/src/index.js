@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2020-01-09 14:17:37
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-04-27 10:51:12
+ * @Last Modified time: 2021-11-03 10:46:47
  */
 
 import "core-js/stable";
@@ -22,7 +22,7 @@ function render(props = {}) {
 }
 
 if (!window.__POWERED_BY_QIANKUN__) {
-  document.title = "jf-web-app-hook";
+  document.title = "jv-react-demo";
   render();
 }
 
