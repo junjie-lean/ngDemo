@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-11-03 13:12:47
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-03 14:18:57
+ * @Last Modified time: 2021-11-03 14:27:49
  */
 
 import React, { Fragment as F, useEffect } from 'react';
@@ -13,19 +13,6 @@ import './../../style/code.scss';
 
 function Code() {
   useEffect(() => {}, []);
-
-  //   const Ajax = Axios.create({
-  //     baseURL: 'http://some-domain.com',
-  //   });
-
-  //   const Ajax = Axios.create({
-  //     baseURL: window.location.origin,
-  //   });
-
-  //   Ajax.post('/some/api/path', {
-  //     params: 'xxxxxx',
-  //   });
-
   return (
     <F>
       <div className="lean-demo1-container">

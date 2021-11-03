@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2020-03-18 11:00:47
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-03 13:38:08
+ * @Last Modified time: 2021-11-03 14:28:13
  */
 
 import React, { useEffect, useState, useRef, FC, Fragment } from 'react';
@@ -22,7 +22,7 @@ function Home(props: any) {
               setActive('1');
             }}
           >
-            code
+            Axios后端配置的处理
           </Button>
           <Button
             type={active == '2' ? 'primary' : 'default'}
