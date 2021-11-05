@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2019-12-19 13:22:01
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-05 15:38:53
+ * @Last Modified time: 2021-11-05 23:53:30
  */
 
 /**
@@ -20,7 +20,7 @@ module.exports.setDefaultModule = function (config = {}, loaderArr = []) {
   let { mode } = config;
 
   const rawLoader = {
-    test: /\.(txt|svg)$/i,
+    test: /\.(txt|svg|md)$/i,
     use: 'raw-loader',
     // include: resolve(__dirname, "..", "src"),
   };
@@ -242,8 +242,8 @@ module.exports.setDefaultModule = function (config = {}, loaderArr = []) {
     rawLoader,
     urlLoader,
     fileLoader,
-    fontLoader,
-    markdownLoader,
+    fontLoader
+    // markdownLoader,
     // happypackLoader
   );
 

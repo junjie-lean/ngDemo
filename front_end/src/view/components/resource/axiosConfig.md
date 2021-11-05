@@ -1,4 +1,4 @@
-#前后端在不同域的Axios请求方式:
+# 前后端在不同域的Axios请求方式:
 ```javascript
 
   //创建axios实例:
@@ -17,7 +17,7 @@
 
 ```
 
-#前后端在同域的Axios请求方式:
+# 前后端在同域的Axios请求方式:
 ```javascript
 
   //创建axios实例:
@@ -36,7 +36,7 @@
 
 ```
 
-#假设后端是express  
+# 以Express框架举例:  
 - 采用http.request.method的方式来做区分:
 
 ```javascript
@@ -48,7 +48,7 @@ app.listen(8080);
 
 //get请求,当做请求静态文件或者模板文件来处理.
 app.get('/some/path',(req,res,next)=>{
-    res.send('some html file');
+    res.send('some static file');
     next();
 })
 
@@ -58,6 +58,7 @@ app.post('/some/path',(req,res,next)=>{
     res.json({});
     next()
 })
+
 
 ```
 
@@ -74,12 +75,23 @@ app.listen(8080);
 app.use('/web',express.static('dist'));
 
 
-app.get('/web?',)
+app.get('/web?',(req,res,next)=>{
+  res.send('some static file');
+  next()
+})
 
+app.get('/server?',(req,res,next)=>{
+  //some service logic
+  res.json({})
+  next()
+})
 
-
-
-
+//RESTful风格方式 
+app.get('/user/:id',(req,res,next)=>{
+  //some service logic
+  res.send("static file with some data")
+  next()
+})
 
 ```
 
