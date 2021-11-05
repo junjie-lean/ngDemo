@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2020-03-17 09:52:08
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-03 13:04:58
+ * @Last Modified time: 2021-11-05 15:05:48
  */
 
 import React from 'react';
@@ -23,7 +23,7 @@ import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
 import autoMergeLevel2 from 'redux-persist/lib/stateReconciler/autoMergeLevel2';
 import { PersistGate } from 'redux-persist/integration/react';
 import Home from './../page/layout-home';
-
+import { HashRouter as Router } from 'react-router-dom';
 const ContextProvider = (props) => {
   //redux同步机制
   //利用redux-persist持久化本地数据,使刷新页面后,redux状态值不丢失.
@@ -64,7 +64,9 @@ export default function App(props) {
       <ProfilerMoniter id="react-app-moniter-root" open={false}>
         <ContextProvider>
           {/* <RouterRelation {...props} /> */}
-          <Home />
+          <Router>
+            <Home />
+          </Router>
         </ContextProvider>
       </ProfilerMoniter>
     </ConfigProvider>

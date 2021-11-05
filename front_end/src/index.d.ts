@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-06-21 10:56:52
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-08-02 10:31:48
+ * @Last Modified time: 2021-11-05 16:18:46
  */
 
 declare module '*.svg' {
@@ -46,5 +46,7 @@ declare module '*.json' {
   export default json;
 }
 
-
-
+declare module '*.md' {
+  const md: string;
+  export default string;
+}

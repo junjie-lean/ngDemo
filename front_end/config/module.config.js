@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2019-12-19 13:22:01
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-07-05 16:09:48
+ * @Last Modified time: 2021-11-05 15:38:53
  */
 
 /**
@@ -11,6 +11,8 @@
 
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { resolve } = require('path');
+const marked = require('marked');
+const renderer = new marked.Renderer();
 const os = require('os');
 
 module.exports.setDefaultModule = function (config = {}, loaderArr = []) {
@@ -198,6 +200,10 @@ module.exports.setDefaultModule = function (config = {}, loaderArr = []) {
       },
       {
         loader: 'markdown-loader',
+        options: {
+          pedantic: true,
+          renderer,
+        },
       },
     ],
   };
@@ -236,8 +242,8 @@ module.exports.setDefaultModule = function (config = {}, loaderArr = []) {
     rawLoader,
     urlLoader,
     fileLoader,
-    fontLoader
-    // markdownLoader,
+    fontLoader,
+    markdownLoader,
     // happypackLoader
   );
 
