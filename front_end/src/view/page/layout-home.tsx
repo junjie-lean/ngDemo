@@ -2,19 +2,18 @@
  * @Author: junjie.lean
  * @Date: 2020-03-18 11:00:47
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-05 15:33:47
+ * @Last Modified time: 2021-11-06 00:28:49
  */
 
 import React, { useEffect, useState, useRef, FC, Fragment } from 'react';
 import './../../style/index.scss';
 import RouterIndex from './../router/router-index';
-import { Space, Button } from 'antd';
+import { Space, Button, Divider } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 
 function Home(props: any) {
   const [active, setActive] = useState<Number>(1);
   const { push } = useHistory();
-
 
   enum routerPath {
     Path1 = '/code',
@@ -23,16 +22,15 @@ function Home(props: any) {
     Path4 = '/config3',
   }
 
-
-
   useEffect(() => {
-    const path = `path${active}`;
+    const path = `Path${active}`;
     push(routerPath[path]);
   }, [active]);
 
   return (
     <Fragment>
       <div className="lean-demo-container">
+        <Divider dashed />
         <Space size={20}>
           <Button
             type={active === 1 ? 'primary' : 'default'}
@@ -40,7 +38,7 @@ function Home(props: any) {
               setActive(1);
             }}
           >
-            Axios后端配置的处理
+            Axios配置的处理
           </Button>
           <Button
             type={active === 2 ? 'primary' : 'default'}
@@ -48,7 +46,7 @@ function Home(props: any) {
               setActive(2);
             }}
           >
-            负载均衡配置1
+            Nginx基础配置
           </Button>
           <Button
             type={active === 3 ? 'primary' : 'default'}
@@ -56,15 +54,16 @@ function Home(props: any) {
               setActive(3);
             }}
           >
-            负载均衡配置2
+            Nginx负载均衡
           </Button>
           <Button
+            disabled
             type={active === 4 ? 'primary' : 'default'}
             onClick={() => {
               setActive(4);
             }}
           >
-            负载均衡配置3
+            其他
           </Button>
         </Space>
       </div>
