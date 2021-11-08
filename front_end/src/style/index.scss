@@ -21,8 +21,22 @@
   height: 100%;
 }
 
+.ant-layout{
+  height: 100%;
+}
+
 .ant-layout-header {
-  background: inherit;
+  color: #fff;
+}
+
+.ant-layout-content{
+  background: #fff;
+}
+
+.lean-content{
+  height: 100%;
+  padding:20px 0 20px 20px;
+
 }
 
 .lean-markdownContent {
@@ -48,9 +62,6 @@
   padding: 30px;
 }
 
-.lean-content {
-  padding: 20px;
-}
 
 .osHistory {
   width: 900px;

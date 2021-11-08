@@ -1,6 +1,6 @@
 ### 一、前后端在不同域的请求方式:
 
-#### 以Axios为请求工具的代码示例:
+#### 以Axios为请求工具的代码示例
 ```javascript
 
   //创建axios实例:
@@ -20,10 +20,14 @@
 ```
 
 #### 优点:
-- 便于前后端联调测试,不同前端开发人员可以指定不同的后端环境,包括开发环境测试环境等等
+- 便于前后端联调测试,结队编程中,不同前端开发人员可以指定不同的后端环境,包括指定开发环境测试环境等等.
+- 部署后,将其配置暴露出来,可以灵活变更数据的服务地址,方便调试.
+  
 
-
-
+#### 缺点:
+- 部署前前端需要知道数据服务的地址.
+- 部署后可能有暴露数据服务地址的风险.
+- 有部署时数据服务地址填写错误的风险.
 
 
 ### 二、前后端在同域的Axios请求方式:
@@ -47,8 +51,16 @@
 
 ```
 
-### 2.2以Express框架举例:  
-- 采用http.request.method的方式来做区分:
+#### 优点:
+- 部署时不需要知道最终部署后的服务地址及策略,可移植性高.
+- 没有暴露数据服务地址的风险.
+
+#### 缺点:
+- 不支持多数据服务地址(特殊情况).
+  
+### 三、前后端同域下的后端解析示例(express):  
+
+- 用http.request.method的方式来做区分:
 
 ```javascript
 
@@ -70,10 +82,17 @@ app.post('/some/path',(req,res,next)=>{
     next()
 })
 
+//RESTful风格方式 
+app.get('/user/:id',(req,res,next)=>{
+  //some service logic
+  res.send("static file with some data")
+  next()
+})
 
 ```
 
-- 采用http.request.pathname的方式来做区分:
+- 用http.request.pathname的方式来做区分:
+
 ```javascript
 
 const express = require('express');
@@ -94,13 +113,6 @@ app.get('/web?',(req,res,next)=>{
 app.get('/server?',(req,res,next)=>{
   //some service logic
   res.json({})
-  next()
-})
-
-//RESTful风格方式 
-app.get('/user/:id',(req,res,next)=>{
-  //some service logic
-  res.send("static file with some data")
   next()
 })
 

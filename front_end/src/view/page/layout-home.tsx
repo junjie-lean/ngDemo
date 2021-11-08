@@ -2,28 +2,39 @@
  * @Author: junjie.lean
  * @Date: 2020-03-18 11:00:47
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-08 17:40:27
+ * @Last Modified time: 2021-11-09 00:21:03
  */
 
 import React, { useEffect, useState, useRef, FC, Fragment } from 'react';
 import './../../style/index.scss';
 import RouterIndex from './../router/router-index';
-import { Space, Button, Divider, Layout } from 'antd';
-import { useHistory, useLocation } from 'react-router-dom';
-
-const { Header, Footer, Sider, Content } = Layout;
+import { Layout, Menu } from 'antd';
+import { useHistory } from 'react-router-dom';
+import PerfectScrollbar from 'react-perfect-scrollbar';
+const { Header, Sider, Content } = Layout;
 
 function Home(props: any) {
-  const [active, setActive] = useState<Number>(0);
+  const [active, setActive] = useState<number>(0);
+  const [collapsed, setCollapsed] = useState<boolean>(false);
   const { push } = useHistory();
 
   enum routerPath {
     Path0 = '/os',
     Path1 = '/code',
-    Path2 = '/config1',
-    Path3 = '/config2',
-    Path4 = '/config3',
+    Path2 = '/nginx',
+    Path3 = '/loadBalancing',
+    Path4 = '/homework',
   }
+
+  const scrollBarRef = useRef(null);
+
+  const menuClickHandle = ({ key }) => {
+    // console.log('key:', key);
+    // console.log('scrollBarRef:', scrollBarRef.current);
+    setActive(Number(key));
+    scrollBarRef.current.updateScroll();
+    scrollBarRef.current._container.scrollTop = 0;
+  };
 
   useEffect(() => {
     const path = `Path${active}`;
@@ -35,58 +46,47 @@ function Home(props: any) {
       <Layout>
         <Header>
           <div>
-            <h2>前端基础运维知识</h2>
+            <span>前端基础运维知识</span>
           </div>
         </Header>
         <Layout>
-          {/* <Sider theme={'light'}>
-            <Space size={20}>
-              <Button
-                type={active === 0 ? 'primary' : 'default'}
-                onClick={() => {
-                  setActive(0);
-                }}
-              >
-                unix系
-              </Button>
-              <Button
-                type={active === 1 ? 'primary' : 'default'}
-                onClick={() => {
-                  setActive(1);
-                }}
-              >
-                Axios配置的处理
-              </Button>
-              <Button
-                type={active === 2 ? 'primary' : 'default'}
-                onClick={() => {
-                  setActive(2);
-                }}
-              >
-                Nginx基础配置
-              </Button>
-              <Button
-                type={active === 3 ? 'primary' : 'default'}
-                onClick={() => {
-                  setActive(3);
-                }}
-              >
-                Nginx负载均衡
-              </Button>
-              <Button
-                disabled
-                type={active === 4 ? 'primary' : 'default'}
-                onClick={() => {
-                  setActive(4);
-                }}
-              >
-                其他
-              </Button>
-            </Space>
-          </Sider> */}
+          <Sider
+            className="sider-content"
+            // collapsible
+            // collapsed={collapsed}
+            // onCollapse={(collapsed) => {
+            //   setCollapsed(collapsed);
+            // }}
+          >
+            <Menu theme={'dark'} onClick={menuClickHandle}>
+              <Menu.Item key={0}>
+                <span>unix系</span>
+              </Menu.Item>
+              <Menu.Item key={1}>
+                <span>后端数据解析方式</span>
+              </Menu.Item>
+              <Menu.Item key={2}>
+                <span>Nginx基础配置</span>
+              </Menu.Item>
+              <Menu.Item key={3}>
+                <span>负载均衡</span>
+              </Menu.Item>
+              <Menu.Item disabled key={4}>
+                <span>其他</span>
+              </Menu.Item>
+            </Menu>
+          </Sider>
+
           <Content>
             <div className="lean-content">
-              <RouterIndex />
+              <PerfectScrollbar
+                style={{ height: '100%', width: '100%' }}
+                ref={(ref) => {
+                  scrollBarRef.current = ref;
+                }}
+              >
+                <RouterIndex />
+              </PerfectScrollbar>
             </div>
           </Content>
         </Layout>
