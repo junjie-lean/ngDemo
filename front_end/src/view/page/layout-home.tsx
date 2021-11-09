@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2020-03-18 11:00:47
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-09 00:21:03
+ * @Last Modified time: 2021-11-09 23:17:48
  */
 
 import React, { useEffect, useState, useRef, FC, Fragment } from 'react';
@@ -60,19 +60,19 @@ function Home(props: any) {
           >
             <Menu theme={'dark'} onClick={menuClickHandle}>
               <Menu.Item key={0}>
-                <span>unix系</span>
+                <span className="unselect">unix系</span>
               </Menu.Item>
               <Menu.Item key={1}>
-                <span>后端数据解析方式</span>
+                <span className="unselect">后端数据解析方式</span>
               </Menu.Item>
               <Menu.Item key={2}>
-                <span>Nginx基础配置</span>
+                <span className="unselect">Nginx基础配置</span>
               </Menu.Item>
               <Menu.Item key={3}>
-                <span>负载均衡</span>
+                <span className="unselect">负载均衡</span>
               </Menu.Item>
               <Menu.Item disabled key={4}>
-                <span>其他</span>
+                <span className="unselect">作业</span>
               </Menu.Item>
             </Menu>
           </Sider>

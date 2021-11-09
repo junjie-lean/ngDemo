@@ -21,7 +21,7 @@
   height: 100%;
 }
 
-.ant-layout{
+.ant-layout {
   height: 100%;
 }
 
@@ -29,14 +29,13 @@
   color: #fff;
 }
 
-.ant-layout-content{
+.ant-layout-content {
   background: #fff;
 }
 
-.lean-content{
+.lean-content {
   height: 100%;
-  padding:20px 0 20px 20px;
-
+  padding: 20px 0 20px 20px;
 }
 
 .lean-markdownContent {
@@ -62,7 +61,10 @@
   padding: 30px;
 }
 
-
 .osHistory {
   width: 900px;
+}
+
+.unselect {
+  user-select: none;
 }
