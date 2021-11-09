@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-03-09 14:58:59
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-08 22:50:42
+ * @Last Modified time: 2021-11-09 15:51:59
  */
 
 import React from 'react';
@@ -29,7 +29,6 @@ const Os = asyncComponent(() =>
   )
 );
 
-
 //nginx config
 const NginxConfig = asyncComponent(() =>
   import(
@@ -37,15 +36,12 @@ const NginxConfig = asyncComponent(() =>
   )
 );
 
-
-
 //负载均衡
 const LoadBalancing = asyncComponent(() =>
   import(
     /*webpackPerload: true,webpackChunkName :"loadBalancing" */ './../components/demo-loadBalancing'
   )
 );
-
 
 export default function RouterRelation(props) {
   let baseHash = '';
@@ -55,8 +51,12 @@ export default function RouterRelation(props) {
       <Route exact path={baseHash + '/os'} component={Os} />
       <Route exact path={baseHash + '/code'} component={Code} />
       <Route exact path={baseHash + '/nginx'} component={NginxConfig} />
-      <Route exact path={baseHash + '/loadBalancing'} component={LoadBalancing} />
-      {/* <Redirect to={baseHash + "/loading"} /> */}
+      <Route
+        exact
+        path={baseHash + '/loadBalancing'}
+        component={LoadBalancing}
+      />
+      <Redirect to={baseHash + '/os'} />
     </Switch>
     // </Router>
   );
