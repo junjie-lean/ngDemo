@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-10-25 21:30:04
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-03 12:52:15
+ * @Last Modified time: 2021-11-10 17:03:15
  */
 
 const express = require('express');
@@ -12,7 +12,7 @@ const appPort = 10001;
 const app2Port = 10002;
 
 app.all('*', (req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '');
+  res.header('Access-Control-Allow-Origin', '*');
   res.header('Access-Control-Allow-Headers', 'Content-Type');
   res.header('Access-Control-Allow-Methods', '*');
   // res.header('Content-Type', 'application/json;charset=utf-8');

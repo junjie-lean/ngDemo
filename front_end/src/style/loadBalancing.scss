@@ -6,6 +6,10 @@
   width: 512px;
 }
 
+.textAlignRight {
+  text-align: right;
+}
+
 .operate {
   text-align: right;
 }
@@ -32,4 +36,8 @@
   align-content: center;
   justify-content: space-between;
   align-items: center;
+  > span {
+    width: 50%;
+    text-align: center;
+  }
 }
