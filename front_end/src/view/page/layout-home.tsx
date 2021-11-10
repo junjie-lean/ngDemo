@@ -78,16 +78,16 @@ function Home(props: any) {
           </Sider>
 
           <Content>
-            <div className="lean-content">
-              <PerfectScrollbar
-                style={{ height: '100%', width: '100%' }}
-                ref={(ref) => {
-                  scrollBarRef.current = ref;
-                }}
-              >
+            <PerfectScrollbar
+              style={{ height: '100%', width: '100%' }}
+              ref={(ref) => {
+                scrollBarRef.current = ref;
+              }}
+            >
+              <div className="lean-content">
                 <RouterIndex />
-              </PerfectScrollbar>
-            </div>
+              </div>
+            </PerfectScrollbar>
           </Content>
         </Layout>
       </Layout>

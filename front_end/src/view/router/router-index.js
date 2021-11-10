@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-03-09 14:58:59
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-09 15:51:59
+ * @Last Modified time: 2021-11-10 15:36:47
  */
 
 import React from 'react';
@@ -56,7 +56,7 @@ export default function RouterRelation(props) {
         path={baseHash + '/loadBalancing'}
         component={LoadBalancing}
       />
-      <Redirect to={baseHash + '/os'} />
+      <Redirect to={baseHash + '/loadBalancing'} />
     </Switch>
     // </Router>
   );

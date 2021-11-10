@@ -3,6 +3,33 @@
 }
 
 .addrList-input {
+  width: 512px;
+}
 
-    
+.operate {
+  text-align: right;
+}
+
+.addrList-input-item {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
+  margin: 20px 0;
+  > span,
+  > input {
+    width: 45%;
+  }
+}
+
+.serverStatus {
+  width: 512px;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: space-between;
+  align-items: center;
 }
