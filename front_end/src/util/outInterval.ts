@@ -2,13 +2,12 @@
  * @Author: junjie.lean
  * @Date: 2021-06-28 12:07:38
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-06-30 15:14:51
+ * @Last Modified time: 2021-11-11 11:27:23
  */
 
 /**
  * @description  一个定时器实现,利用setTimeout来模拟setInterval,并且增加补时机制,使定时器相对能较准确的执行.
  */
-
 
 interface timerFN {
   (): void;
@@ -137,9 +136,9 @@ export function cancelTimer(timerFlag: string): void {
     globalTimer[timerIndex].status = false;
     globalTimer[timerIndex].endTime = Date.now();
   } else {
-    console.log('清除定时器异常,需要清除的定时器不在全局定时器列表里!');
-    console.log('全局定时器:', globalTimer);
-    console.log('需要清除的定时器ID:', timerFlag);
+    // console.log('清除定时器异常,需要清除的定时器不在全局定时器列表里!');
+    // console.log('全局定时器:', globalTimer);
+    // console.log('需要清除的定时器ID:', timerFlag);
     // throw new Error('参数异常,未能找到需要清除的定时器!');
   }
 }

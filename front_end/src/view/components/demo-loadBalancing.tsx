@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-11-08 22:41:45
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-10 17:45:34
+ * @Last Modified time: 2021-11-11 17:47:53
  */
 
 // load balancing demo
@@ -12,6 +12,7 @@ import React, {
   useLayoutEffect,
   useEffect,
   useState,
+  useRef,
 } from 'react';
 import { Divider, Input, Space, Button, Tag } from 'antd';
 import {
@@ -20,14 +21,74 @@ import {
   SyncOutlined,
   ExclamationCircleOutlined,
 } from '@ant-design/icons';
-import { Chart } from '@antv/g2';
+
 import lodash from 'lodash';
 import Axios from 'axios';
+
+import { Chart } from '@antv/g2';
+import DataSet from '@antv/data-set';
+
 import './../../style/loadBalancing.scss';
-import { indexedAccessType } from '@babel/types';
+import { cancelTimer, createTimer } from './../../util/outInterval';
+
+/**
+ * @description 初始化antv实例
+ */
+function initialDOM() {
+  const ds = new DataSet();
+  const dv = ds
+    .createView()
+    .source([])
+    .transform({
+      type: 'percent',
+      field: 'value',
+      dimension: 'label',
+      groupBy: ['time'],
+      as: 'percent',
+    });
+
+  const chart = new Chart({
+    container: 'chart-dom',
+    autoFit: true,
+    height: 500,
+  });
+
+  chart.data(dv.rows);
+  chart.scale({
+    percent: {
+      min: 0,
+      // formatter(val) {
+      //   return (val * 100).toFixed(2) + '%';
+      // },
+    },
+  });
+
+  chart.tooltip({
+    shared: true,
+    showMarkers: false,
+  });
+
+  chart.interval().position('time*percent').color('country').adjust('stack');
+  chart.interaction('active-region');
+  chart.render();
+  return chart;
+}
+
+/**
+ * @description 节流函数
+ */
+const throttleDisposeData = lodash.throttle(
+  (fn = () => {}) => {
+    fn();
+  },
+  2500,
+  {
+    leadubg: false,
+  }
+);
 
 function LoadBalancing(props: any) {
-  interface serviceAddrInfo {
+  interface ServiceAddrInfo {
     address: string;
     label: string;
     status: 'success' | 'fail' | 'pending' | 'hold';
@@ -36,7 +97,7 @@ function LoadBalancing(props: any) {
     inputDone: boolean;
   }
 
-  const [addrList, setAddrList] = useState<Array<serviceAddrInfo>>([
+  const [addrList, setAddrList] = useState<Array<ServiceAddrInfo>>([
     {
       address: 'localhost:10001',
       label: 'Server A',
@@ -45,7 +106,19 @@ function LoadBalancing(props: any) {
       inputDone: true,
     },
   ]);
+
   const [beginRequest, setRequestStatus] = useState<boolean>(false);
+
+  const [resList, setResList] = useState<Array<any>>([]);
+
+  //请求数据的定时器标识
+  const requestRef = useRef<string>('');
+
+  //处理数据的定时器标识
+  const disposeData = useRef<string>('');
+
+  //antv的chart ref,返回自初始化图表的函数,保存图标实例
+  const chartRef = useRef<Chart>();
 
   /**
    * @description 添加服务器地址
@@ -53,7 +126,7 @@ function LoadBalancing(props: any) {
    * @param index index
    */
   const addAddress = (value: string | any, index: number) => {
-    const tmpArr: Array<serviceAddrInfo> = lodash.cloneDeep(addrList);
+    const tmpArr: Array<ServiceAddrInfo> = lodash.cloneDeep(addrList);
     tmpArr[index]['address'] = value;
     tmpArr[index]['inputDone'] =
       tmpArr[index]['address'].length > 0 && tmpArr[index]['label'].length > 0;
@@ -66,7 +139,7 @@ function LoadBalancing(props: any) {
    * @param index index
    */
   const addAddressLabel = (value: string | any, index: number) => {
-    const tmpArr: Array<serviceAddrInfo> = lodash.cloneDeep(addrList);
+    const tmpArr: Array<ServiceAddrInfo> = lodash.cloneDeep(addrList);
     tmpArr[index]['label'] = value;
     tmpArr[index]['inputDone'] =
       tmpArr[index]['address'].length > 0 && tmpArr[index]['label'].length > 0;
@@ -77,13 +150,10 @@ function LoadBalancing(props: any) {
    * @description 添加一条空白数据到列表
    */
   const pushOneEmptyServer = () => {
-    console.log(addrList);
-
     if (addrList.some((item) => item.inputDone === false)) {
       return;
     }
-
-    const tmp: serviceAddrInfo = {
+    const tmp: ServiceAddrInfo = {
       address: '',
       label: '',
       status: 'hold',
@@ -98,27 +168,11 @@ function LoadBalancing(props: any) {
    * @description 开始执行请求
    */
   const startAllRequest = () => {
-    let arr: Array<serviceAddrInfo> = addrList.map((item) => ({
+    let arr: Array<ServiceAddrInfo> = addrList.map((item) => ({
       ...item,
       status: 'pending',
     }));
     setAddrList(arr);
-
-    arr.map((item, index) => {
-      let url = 'http://' + item.address;
-      Axios.post(url)
-        .then((res) => {
-          arr[index].status = 'success';
-          let newArr = lodash.cloneDeep(arr);
-          setAddrList(newArr);
-        })
-        .catch((err) => {
-          arr[index].status = 'fail';
-          let newArr = lodash.cloneDeep(arr);
-          setAddrList(newArr);
-        });
-    });
-
     setRequestStatus(true);
   };
 
@@ -126,7 +180,7 @@ function LoadBalancing(props: any) {
    * @description 停止所有请求
    */
   const stopAllRequest = () => {
-    let arr: Array<serviceAddrInfo> = addrList.map((item) => ({
+    let arr: Array<ServiceAddrInfo> = addrList.map((item) => ({
       ...item,
       status: 'hold',
     }));
@@ -139,15 +193,89 @@ function LoadBalancing(props: any) {
    */
   const removeAllRequest = () => {
     setAddrList([]);
+    setResList([]);
   };
+
   /**
    * @description componentDidMount
    */
-  useLayoutEffect(() => {}, []);
+  useLayoutEffect(() => {
+    chartRef.current = initialDOM();
+  }, []);
 
+  /**
+   * @description 切换 开始/停止 的请求的状态
+   */
   useEffect(() => {
-    console.log('list change:', addrList);
-  }, [addrList]);
+    if (beginRequest) {
+      let newAddressList: Array<ServiceAddrInfo> = lodash.cloneDeep(addrList);
+      let description: string = '每秒发送三次的请求';
+      let interval: number = 333;
+
+      let disposeFunction = () => {
+        newAddressList.map((item, index) => {
+          let url = 'http://' + item.address;
+          Axios.post(url)
+            .then((res) => {
+              const { status, statusText, data } = res;
+              if (status === 200 && statusText === 'OK') {
+                //将服务器请求状态标识更改
+                newAddressList[index].status = 'success';
+                let newArr = lodash.cloneDeep(newAddressList);
+                setAddrList(newArr);
+
+                //将服务器返回的数据放在一个新的数组里
+                let tmp = {
+                  label: item.label,
+                  source: data.source,
+                  time: data.now,
+                  status: 'success',
+                };
+                // let _resList = lodash.cloneDeep(resList);
+                // let dataArr: Array<any> = [].concat(_resList, [tmp]);
+
+                setResList((resList) => [].concat(resList, [tmp]));
+              }
+            })
+            .catch((err) => {
+              // console.log(err);
+              //将服务器请求状态标识更改
+              newAddressList[index].status = 'fail';
+              let newArr = lodash.cloneDeep(newAddressList);
+              setAddrList(newArr);
+
+              //将服务器返回的数据放在一个新的数组里
+              let tmp = {
+                label: item.label,
+                time: Date.now(),
+                status: 'fail',
+              };
+              let _resList = lodash.cloneDeep(resList);
+              let dataArr: Array<any> = [].concat(_resList, [tmp]);
+              // setResList(() => dataArr);
+
+              setResList((resList) => [].concat(resList, [tmp]));
+            });
+        });
+      };
+
+      //begin request;
+      requestRef.current = createTimer(disposeFunction, interval, description);
+    } else {
+      // console.log('end request');
+      cancelTimer(requestRef.current);
+    }
+  }, [beginRequest]);
+
+  /**
+   * @description 请求的返回值变化时,处理数据
+   */
+  useEffect(() => {
+    // console.log(' useEffect:', resList);
+    throttleDisposeData(() => {
+      console.log(resList);
+    });
+  }, [resList]);
 
   return (
     <F>
@@ -248,8 +376,8 @@ function LoadBalancing(props: any) {
           </Button>
         </Space>
       </div>
-      <div>
-        <div className="chart-container" id="chart-container"></div>
+      <div className="chart-container">
+        <div id="chart-dom"></div>
       </div>
     </F>
   );
