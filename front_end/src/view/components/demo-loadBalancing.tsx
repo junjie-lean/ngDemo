@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-11-08 22:41:45
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-11 17:47:53
+ * @Last Modified time: 2021-11-12 16:24:13
  */
 
 // load balancing demo
@@ -26,51 +26,59 @@ import lodash from 'lodash';
 import Axios from 'axios';
 
 import { Chart } from '@antv/g2';
-import DataSet from '@antv/data-set';
-
+import moment from 'moment';
 import './../../style/loadBalancing.scss';
 import { cancelTimer, createTimer } from './../../util/outInterval';
+
+//统计数据间隔
+const countInterval: number = 5000;
 
 /**
  * @description 初始化antv实例
  */
 function initialDOM() {
-  const ds = new DataSet();
-  const dv = ds
-    .createView()
-    .source([])
-    .transform({
-      type: 'percent',
-      field: 'value',
-      dimension: 'label',
-      groupBy: ['time'],
-      as: 'percent',
-    });
-
   const chart = new Chart({
     container: 'chart-dom',
     autoFit: true,
     height: 500,
   });
 
-  chart.data(dv.rows);
-  chart.scale({
-    percent: {
-      min: 0,
-      // formatter(val) {
-      //   return (val * 100).toFixed(2) + '%';
-      // },
-    },
+  chart.scale('count', {
+    // nice: true,
+    max: 50,
+    min: 0,
   });
 
   chart.tooltip({
     shared: true,
     showMarkers: false,
+    title(title) {
+      return '时间:' + title;
+    },
+    customItems(items) {
+      // console.log('list:', items);
+      let formatArray = items.map((item) => ({
+        ...item,
+        name: item.data.name,
+        value: item.value + '次',
+      }));
+      console.log('before:', items);
+      console.log('after:', formatArray);
+      return formatArray;
+    },
   });
 
-  chart.interval().position('time*percent').color('country').adjust('stack');
-  chart.interaction('active-region');
+  chart.legend(false);
+
+  chart
+    .interval()
+    .position('time*count')
+    .color('color')
+    .size(35)
+    .adjust('stack');
+  // chart.interaction('active-region');
   chart.render();
+
   return chart;
 }
 
@@ -81,9 +89,10 @@ const throttleDisposeData = lodash.throttle(
   (fn = () => {}) => {
     fn();
   },
-  2500,
+  countInterval,
   {
-    leadubg: false,
+    // leadubg: false,
+    leading: false,
   }
 );
 
@@ -107,9 +116,13 @@ function LoadBalancing(props: any) {
     },
   ]);
 
+  const [requestInterval, setRequestInterval] = useState<number>(150);
+
   const [beginRequest, setRequestStatus] = useState<boolean>(false);
 
   const [resList, setResList] = useState<Array<any>>([]);
+
+  const [chartData, setChartData] = useState<Array<any>>([]);
 
   //请求数据的定时器标识
   const requestRef = useRef<string>('');
@@ -194,6 +207,52 @@ function LoadBalancing(props: any) {
   const removeAllRequest = () => {
     setAddrList([]);
     setResList([]);
+    setChartData([]);
+  };
+
+  /**
+   * @description 每轮数据更新的数据处理函数,和countInterval有关
+   */
+  const perLoopRenderChart = () => {
+    let newArray = lodash.groupBy(
+      resList.filter((item) => item.time > Date.now() - countInterval),
+      'label'
+    );
+    // console.log(newArray);
+    let now = moment().format('HH:mm:ss');
+
+    let tmpChartData = lodash
+      .cloneDeep(chartData)
+      // 过滤掉7轮之前的数据,
+      .filter((item) => item.timeStamp > Date.now() - countInterval * 7);
+
+    let colorList = [
+      '#62daab',
+      '#5b8ef9',
+      '#5d7092',
+      '#145ab7',
+      '#a0c8ff',
+      '#bce3ff',
+    ];
+
+    Object.keys(newArray).map((key, index) => {
+      let obj = {
+        name: key,
+        time: now,
+        timeStamp: Date.now(),
+        count: newArray[key].filter((item) => item.status === 'success').length,
+        color: colorList[index],
+      };
+      tmpChartData.push(obj);
+    });
+
+    let tmpChartDataSort = lodash.sortBy(tmpChartData, 'name');
+
+    // console.log(tmpChartData);
+    // console.log(tmpChartDataSort);
+
+    setChartData(tmpChartDataSort);
+    setResList([]);
   };
 
   /**
@@ -209,8 +268,8 @@ function LoadBalancing(props: any) {
   useEffect(() => {
     if (beginRequest) {
       let newAddressList: Array<ServiceAddrInfo> = lodash.cloneDeep(addrList);
-      let description: string = '每秒发送三次的请求';
-      let interval: number = 333;
+      let description: string = '每秒发送请求';
+      let interval: number = requestInterval;
 
       let disposeFunction = () => {
         newAddressList.map((item, index) => {
@@ -271,11 +330,13 @@ function LoadBalancing(props: any) {
    * @description 请求的返回值变化时,处理数据
    */
   useEffect(() => {
-    // console.log(' useEffect:', resList);
-    throttleDisposeData(() => {
-      console.log(resList);
-    });
+    throttleDisposeData(perLoopRenderChart);
   }, [resList]);
+
+  useEffect(() => {
+    // console.log(chartData);
+    chartRef.current.changeData(chartData);
+  }, [chartData]);
 
   return (
     <F>
@@ -300,7 +361,9 @@ function LoadBalancing(props: any) {
             </div>
           ))}
           <div className="addrList-input textAlignRight">
-            <Button onClick={pushOneEmptyServer}>添加</Button>
+            <Button onClick={pushOneEmptyServer} disabled={beginRequest}>
+              添加
+            </Button>
           </div>
         </div>
       </div>
