@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-11-08 22:41:45
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-12 16:24:13
+ * @Last Modified time: 2021-11-15 09:49:39
  */
 
 // load balancing demo
@@ -62,8 +62,8 @@ function initialDOM() {
         name: item.data.name,
         value: item.value + '次',
       }));
-      console.log('before:', items);
-      console.log('after:', formatArray);
+      // console.log('before:', items);
+      // console.log('after:', formatArray);
       return formatArray;
     },
   });
@@ -72,8 +72,12 @@ function initialDOM() {
 
   chart
     .interval()
+    .style('name', (style) => {
+      console.log(style);
+      return { fill: 'blue' };
+    })
     .position('time*count')
-    .color('color')
+    // .color('color')
     .size(35)
     .adjust('stack');
   // chart.interaction('active-region');
@@ -93,6 +97,7 @@ const throttleDisposeData = lodash.throttle(
   {
     // leadubg: false,
     leading: false,
+    // trailing:false
   }
 );
 
@@ -181,10 +186,13 @@ function LoadBalancing(props: any) {
    * @description 开始执行请求
    */
   const startAllRequest = () => {
-    let arr: Array<ServiceAddrInfo> = addrList.map((item) => ({
-      ...item,
-      status: 'pending',
-    }));
+    let arr: Array<ServiceAddrInfo> = addrList
+      .filter((item) => item.label)
+      .map((item) => ({
+        ...item,
+        status: 'pending',
+      }));
+
     setAddrList(arr);
     setRequestStatus(true);
   };
@@ -248,17 +256,16 @@ function LoadBalancing(props: any) {
 
     let tmpChartDataSort = lodash.sortBy(tmpChartData, 'name');
 
-    // console.log(tmpChartData);
-    // console.log(tmpChartDataSort);
-
-    setChartData(tmpChartDataSort);
+    // 每轮请求完成后,把上一轮的请求列表置为空
     setResList([]);
+    setChartData(tmpChartDataSort);
   };
 
   /**
    * @description componentDidMount
    */
   useLayoutEffect(() => {
+    console.log('did mounted');
     chartRef.current = initialDOM();
   }, []);
 
@@ -330,11 +337,16 @@ function LoadBalancing(props: any) {
    * @description 请求的返回值变化时,处理数据
    */
   useEffect(() => {
-    throttleDisposeData(perLoopRenderChart);
+    if (beginRequest) {
+      throttleDisposeData(perLoopRenderChart);
+    }
   }, [resList]);
 
+  /**
+   * @description   把处理过后的数据放入渲染
+   */
   useEffect(() => {
-    // console.log(chartData);
+    console.log(chartData);
     chartRef.current.changeData(chartData);
   }, [chartData]);
 
