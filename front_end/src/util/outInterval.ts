@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-06-28 12:07:38
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-11 11:27:23
+ * @Last Modified time: 2021-11-16 17:07:58
  */
 
 /**
@@ -28,7 +28,7 @@ interface timerInfo {
 
 let globalTimer: Array<timerInfo> = [];
 
-window.timer = globalTimer;
+(window as any).timer = globalTimer;
 
 export function createTimer(
   fn: timerFN,
