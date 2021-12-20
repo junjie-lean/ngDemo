@@ -2,11 +2,11 @@
  * @Author: junjie.lean
  * @Date: 2021-11-03 13:12:47
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-06 00:21:28
+ * @Last Modified time: 2021-12-20 15:42:14
  */
 
 import React, { Fragment as F, useEffect, useState } from 'react';
-import Axios from 'axios';
+// import Axios from 'axios';
 import './../../style/code.scss';
 import axiosMD from './resource/axiosConfig.md';
 import ReactMarkdown from 'react-markdown';
