@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2020-03-18 11:00:47
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-10 00:01:41
+ * @Last Modified time: 2021-12-22 14:03:25
  */
 
 import React, { useEffect, useState, useRef, FC, Fragment } from 'react';
@@ -50,14 +50,7 @@ function Home(props: any) {
           </div>
         </Header>
         <Layout>
-          <Sider
-            className="sider-content"
-            // collapsible
-            // collapsed={collapsed}
-            // onCollapse={(collapsed) => {
-            //   setCollapsed(collapsed);
-            // }}
-          >
+          <Sider className="sider-content">
             <Menu theme={'dark'} onClick={menuClickHandle}>
               <Menu.Item key={0}>
                 <span className="unselect">unix系</span>
@@ -71,7 +64,7 @@ function Home(props: any) {
               <Menu.Item key={3}>
                 <span className="unselect">负载均衡</span>
               </Menu.Item>
-              <Menu.Item disabled key={4}>
+              <Menu.Item key={4}>
                 <span className="unselect">作业</span>
               </Menu.Item>
             </Menu>

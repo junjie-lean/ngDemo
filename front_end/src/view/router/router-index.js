@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-03-09 14:58:59
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-10 15:36:47
+ * @Last Modified time: 2021-12-22 14:05:17
  */
 
 import React from 'react';
@@ -43,6 +43,11 @@ const LoadBalancing = asyncComponent(() =>
   )
 );
 
+const HomeWork = asyncComponent(() =>
+  import(
+    /*webpackPerload: true,webpackChunkName :"homework" */ './../components/demo-homework'
+  )
+);
 export default function RouterRelation(props) {
   let baseHash = '';
   return (
@@ -56,7 +61,8 @@ export default function RouterRelation(props) {
         path={baseHash + '/loadBalancing'}
         component={LoadBalancing}
       />
-      <Redirect to={baseHash + '/loadBalancing'} />
+      <Route exact path={baseHash + '/homework'} component={HomeWork} />
+      <Redirect to={baseHash + '/os'} />
     </Switch>
     // </Router>
   );

@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-11-08 22:41:45
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-12-22 09:35:02
+ * @Last Modified time: 2021-12-22 13:56:46
  */
 
 // load balancing demo
@@ -87,6 +87,10 @@ function initialDOM() {
     {
       color: '#f6c12c',
       name: 'Server D',
+    },
+    {
+      color: '#fff7e6',
+      name: 'Server E',
     },
   ];
 
