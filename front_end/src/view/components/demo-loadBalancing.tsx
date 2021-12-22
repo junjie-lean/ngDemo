@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-11-08 22:41:45
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-15 09:49:39
+ * @Last Modified time: 2021-12-22 09:35:02
  */
 
 // load balancing demo
@@ -31,7 +31,7 @@ import './../../style/loadBalancing.scss';
 import { cancelTimer, createTimer } from './../../util/outInterval';
 
 //统计数据间隔
-const countInterval: number = 5000;
+const countInterval: number = 3000;
 
 /**
  * @description 初始化antv实例
@@ -40,7 +40,8 @@ function initialDOM() {
   const chart = new Chart({
     container: 'chart-dom',
     autoFit: true,
-    height: 500,
+    height: 350,
+    width: 400,
   });
 
   chart.scale('count', {
@@ -50,13 +51,13 @@ function initialDOM() {
   });
 
   chart.tooltip({
-    shared: true,
+    // shared: true,
     showMarkers: false,
     title(title) {
       return '时间:' + title;
     },
     customItems(items) {
-      // console.log('list:', items);
+      console.log('list:', items);
       let formatArray = items.map((item) => ({
         ...item,
         name: item.data.name,
@@ -70,11 +71,31 @@ function initialDOM() {
 
   chart.legend(false);
 
+  const colorList = [
+    {
+      color: '#667898',
+      name: 'Server A',
+    },
+    {
+      color: '#62daab',
+      name: 'Server B',
+    },
+    {
+      color: '#6395f9',
+      name: 'Server C',
+    },
+    {
+      color: '#f6c12c',
+      name: 'Server D',
+    },
+  ];
+
   chart
     .interval()
-    .style('name', (style) => {
-      console.log(style);
-      return { fill: 'blue' };
+    .style('name', (name) => {
+      return {
+        fill: colorList.find((item) => item.name === name)?.color ?? '',
+      };
     })
     .position('time*count')
     // .color('color')
@@ -86,6 +107,27 @@ function initialDOM() {
   return chart;
 }
 
+function initialPieChart() {
+  const chart = new Chart({
+    container: 'chart-pie-dom',
+    autoFit: true,
+    height: 350,
+    width: 400,
+  });
+  chart.coordinate('theta', {
+    radius: 0.75,
+  });
+
+  chart.interval().position('count').color('name').adjust('stack');
+
+  chart.tooltip({
+    showTitle: false,
+    showMarkers: false,
+  });
+
+  chart.render();
+  return chart;
+}
 /**
  * @description 节流函数
  */
@@ -101,6 +143,9 @@ const throttleDisposeData = lodash.throttle(
   }
 );
 
+/**
+ * @description 组件
+ */
 function LoadBalancing(props: any) {
   interface ServiceAddrInfo {
     address: string;
@@ -129,6 +174,8 @@ function LoadBalancing(props: any) {
 
   const [chartData, setChartData] = useState<Array<any>>([]);
 
+  const [pieChartData, setPieChartData] = useState<Array<any>>([]);
+
   //请求数据的定时器标识
   const requestRef = useRef<string>('');
 
@@ -137,7 +184,7 @@ function LoadBalancing(props: any) {
 
   //antv的chart ref,返回自初始化图表的函数,保存图标实例
   const chartRef = useRef<Chart>();
-
+  const pieChareRef = useRef<Chart>();
   /**
    * @description 添加服务器地址
    * @param value address
@@ -210,12 +257,13 @@ function LoadBalancing(props: any) {
   };
 
   /**
-   * @description 清楚所有添加的请求
+   * @description 清除所有添加的请求
    */
   const removeAllRequest = () => {
     setAddrList([]);
     setResList([]);
     setChartData([]);
+    setPieChartData([]);
   };
 
   /**
@@ -234,6 +282,23 @@ function LoadBalancing(props: any) {
       // 过滤掉7轮之前的数据,
       .filter((item) => item.timeStamp > Date.now() - countInterval * 7);
 
+    let pieArray = lodash.groupBy(
+      resList.filter((item) => item.time > Date.now() - countInterval),
+      'source'
+    );
+
+    console.log(pieArray);
+    let peiData = Reflect.ownKeys(pieArray)
+      .filter((key) => key !== 'undefined')
+      .map((item) => ({
+        [item]: pieArray[item].length,
+        name: item,
+        count: pieArray[item].length,
+      }));
+    // console.log('peiData', peiData);
+
+    setPieChartData(peiData);
+
     let colorList = [
       '#62daab',
       '#5b8ef9',
@@ -249,7 +314,7 @@ function LoadBalancing(props: any) {
         time: now,
         timeStamp: Date.now(),
         count: newArray[key].filter((item) => item.status === 'success').length,
-        color: colorList[index],
+        // color: colorList[index],
       };
       tmpChartData.push(obj);
     });
@@ -262,18 +327,11 @@ function LoadBalancing(props: any) {
   };
 
   /**
-   * @description componentDidMount
+   * @description 开始处理请求
+   * @param isBegin boolean
    */
-  useLayoutEffect(() => {
-    console.log('did mounted');
-    chartRef.current = initialDOM();
-  }, []);
-
-  /**
-   * @description 切换 开始/停止 的请求的状态
-   */
-  useEffect(() => {
-    if (beginRequest) {
+  const beginRequestFn = (isBegin) => {
+    if (isBegin) {
       let newAddressList: Array<ServiceAddrInfo> = lodash.cloneDeep(addrList);
       let description: string = '每秒发送请求';
       let interval: number = requestInterval;
@@ -331,6 +389,22 @@ function LoadBalancing(props: any) {
       // console.log('end request');
       cancelTimer(requestRef.current);
     }
+  };
+
+  /**
+   * @description componentDidMount
+   */
+  useLayoutEffect(() => {
+    // console.log('did mounted');
+    chartRef.current = initialDOM();
+    pieChareRef.current = initialPieChart();
+  }, []);
+
+  /**
+   * @description 切换 开始/停止 的请求的状态
+   */
+  useEffect(() => {
+    beginRequestFn(beginRequest);
   }, [beginRequest]);
 
   /**
@@ -346,9 +420,14 @@ function LoadBalancing(props: any) {
    * @description   把处理过后的数据放入渲染
    */
   useEffect(() => {
-    console.log(chartData);
+    // console.log(chartData);
     chartRef.current.changeData(chartData);
   }, [chartData]);
+
+  useEffect(() => {
+    console.log(pieChartData);
+    pieChareRef.current.changeData(pieChartData);
+  }, [pieChartData]);
 
   return (
     <F>
@@ -453,6 +532,7 @@ function LoadBalancing(props: any) {
       </div>
       <div className="chart-container">
         <div id="chart-dom"></div>
+        <div id="chart-pie-dom"></div>
       </div>
     </F>
   );

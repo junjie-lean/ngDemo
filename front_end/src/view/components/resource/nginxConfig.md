@@ -72,7 +72,7 @@ http {
 
 
         # location / {
-        #     root /Users/junjie.lean/Desktop/233新SVN源码/决策指挥江苏录取大屏/build_nginx;
+        #     root /Users/junjie.lean/Desktop/build_nginx;
         #     index index.html index.htm;
         # }
         # location /lqcj/ {
@@ -153,8 +153,7 @@ http {
     #     }
     # }
     # 包含其他文件夹的配置
-    # include servers/*;
-    # include /Users/junjie.lean/Desktop/nginx_demo/nginx_config/*;
+    include /Users/junjie.lean/Desktop/nginx_demo/nginx_config/*;
 }
 
 ```

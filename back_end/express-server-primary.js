@@ -2,7 +2,7 @@
  * @Author: junjie.lean
  * @Date: 2021-10-25 21:30:04
  * @Last Modified by: junjie.lean
- * @Last Modified time: 2021-11-12 16:16:38
+ * @Last Modified time: 2021-12-22 09:36:34
  */
 
 const express = require('express');
@@ -12,7 +12,7 @@ const appPort = 10001;
 const app2Port = 10002;
 
 //请求拒绝率,有 ${rejectRate}%的概率拒绝此处请求;
-const rejectRate = 66;
+const rejectRate = 0;
 
 app.all('*', (req, res, next) => {
   res.header('Access-Control-Allow-Origin', '*');
